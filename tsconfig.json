@@ -103,9 +103,6 @@
   "references": [
       {
           "path": "desktop"
-      },
-      {
-          "path": "server"
       }
   ]
 }

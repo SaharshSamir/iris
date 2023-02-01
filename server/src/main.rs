@@ -1,9 +1,8 @@
 use std::net::SocketAddr;
-
 use rspc::Router;
-use axum::{routing::get, http::Request};
-use tower_http::cors::Cors;
+use axum::routing::get;
 use tower_http::cors::{Any, CorsLayer};
+use iris_core::db_connection::connect;
 
 struct Ctx{}
 
@@ -14,6 +13,7 @@ async fn main() {
         .build()
         .arced();
     
+    connect();
 
     let cors = CorsLayer::new()
         .allow_methods(Any)

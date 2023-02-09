@@ -16,3 +16,6 @@ tower-http = { version = "0.3.5", default-features = false, features = ["cors"] 
 futures = "0.3.21"
 sea-orm = { version = "^0.10.7", features = [ "sqlx-mysql", "runtime-async-std-native-tls", "macros" ] }
 iris_core = {path = "../iris_core"}
+envtesting = {path = "../envtesting"}
+dotenv = "0.15.0"
+chrono = "0.4.23"

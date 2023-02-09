@@ -1,2 +1,21 @@
 [workspace]
-members = ["server", "iris_core"]
+members = [
+  "server", 
+  "iris_core", 
+  "envtesting", 
+  "iris_core/prisma-cli",
+  "desktop/src-tauri"
+]
+
+[workspace.dependencies]
+prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust.git", features = [
+  "rspc",
+  "migrations",
+  "mysql",
+], default-features = false }
+prisma-client-rust-cli = { git = "https://github.com/Brendonovich/prisma-client-rust.git", features = [
+  "rspc",
+  "migrations",
+  "mysql",
+], default-features = false }
+rspc = { version = "0.1.2" }

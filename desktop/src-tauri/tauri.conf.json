@@ -7,7 +7,7 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "desktop",
+    "productName": "Iris",
     "version": "0.0.0"
   },
   "tauri": {
@@ -16,6 +16,21 @@
       "shell": {
         "all": false,
         "open": true
+      },
+      "clipboard": {
+        "all": true,
+        "readText": false,
+        "writeText": false
+      },
+      "globalShortcut": {
+        "all": true
+      },
+      "window": {
+        "center": true,
+        "close": false,
+        "create": false,
+        "hide": true,
+        "setAlwaysOnTop": true
       }
     },
     "bundle": {
@@ -61,10 +76,22 @@
       {
         "fullscreen": false,
         "height": 600,
-        "resizable": true,
-        "title": "desktop",
-        "width": 800
+        "resizable": false,
+        "title": "iris",
+        "width": 800,
+        "alwaysOnTop": true,
+        "center": true,
+        "skipTaskbar": true,
+        "visible": false,
+        "titleBarStyle": "Transparent",
+        "hiddenTitle": true,
+        "decorations": false,
+        "focus": false
       }
-    ]
+    ],
+    "systemTray": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": true
+    }
   }
 }

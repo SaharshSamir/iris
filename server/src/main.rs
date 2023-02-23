@@ -7,8 +7,8 @@ use iris_core::{
     db::new_client::new_client,
     prisma::{example, PrismaClient},
 };
-use rspc::Router;
-use std::{net::SocketAddr, sync::Arc};
+use rspc::{Router, Config};
+use std::{net::SocketAddr, sync::Arc, path::PathBuf};
 use tower_http::cors::{Any, CorsLayer};
 
 struct Ctx {
@@ -20,8 +20,9 @@ async fn main() {
     dotenv().ok();
 
     let db = Arc::new(new_client().await.expect("Unable to create prisma client"));
-
+    println!(env!("CARGO_MANIFEST_DIR"));
     let router = Router::<Ctx>::new()
+        .config(Config::new().export_ts_bindings(PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../iris_core/bindings.ts")))
         .query("version", |t| t(|_, _: ()| env!("CARGO_PKG_VERSION")))
         .query("newex", |t| {
             t(|ctx, _: ()| async move {

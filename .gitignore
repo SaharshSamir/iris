@@ -2,3 +2,4 @@
 /iris_core/src/prisma.rs
 iris_core/src/prisma.rs
 .env
+node_modules

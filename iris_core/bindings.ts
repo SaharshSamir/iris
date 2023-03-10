@@ -2,8 +2,7 @@
 
 export type Procedures = {
     queries: 
-        { key: "newex", input: never, result: string } | 
-        { key: "version", input: never, result: string },
+        { key: "health", input: never, result: string },
     mutations: never,
     subscriptions: never
 };

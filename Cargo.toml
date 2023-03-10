@@ -12,10 +12,10 @@ prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust
   "rspc",
   "migrations",
   "mysql",
-], default-features = false }
+], default-features = false, tag="0.6.5" }
 prisma-client-rust-cli = { git = "https://github.com/Brendonovich/prisma-client-rust.git", features = [
   "rspc",
   "migrations",
   "mysql",
-], default-features = false }
+], default-features = false, tag="0.6.5" }
 rspc = { version = "0.1.2" }

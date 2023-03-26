@@ -43,8 +43,6 @@ async fn main() {
         .arced();
 
     let cors = CorsLayer::new()
-        .allow_methods(Any)
-        .allow_headers(Any)
         .allow_origin(Any);
 
     #[tokio::main]
@@ -65,6 +63,7 @@ async fn main() {
         .merge(oauth::oauth_router())
         .with_state(Ctx::new().await)
         .layer(cors);
+
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 6969));
 

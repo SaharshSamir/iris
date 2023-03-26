@@ -999,6 +999,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "cookie"
+version = "0.17.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7efb37c3e1ccb1ff97164ad95ac1606e8ccd35b3fa0a7d99a304c7f4a428cc24"
+dependencies = [
+ "percent-encoding",
+ "time 0.3.20",
+ "version_check",
+]
+
+[[package]]
 name = "core-foundation"
 version = "0.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2445,7 +2456,7 @@ dependencies = [
  "async-tungstenite",
  "axum",
  "base64 0.20.0",
- "cookie",
+ "cookie 0.16.2",
  "form_urlencoded",
  "futures",
  "http",
@@ -4212,8 +4223,8 @@ dependencies = [
 
 [[package]]
 name = "prisma-client-rust"
-version = "0.6.5"
-source = "git+https://github.com/Brendonovich/prisma-client-rust.git?tag=0.6.5#3db4094ae70aa0aa7047da005d14c0a3ff48ec51"
+version = "0.6.6"
+source = "git+https://github.com/Brendonovich/prisma-client-rust.git?tag=0.6.6#76693baa675bcb38213901984b306d92c4e8a168"
 dependencies = [
  "base64 0.13.1",
  "bigdecimal",
@@ -4227,6 +4238,7 @@ dependencies = [
  "indexmap",
  "migration-core",
  "paste",
+ "prisma-client-rust-macros",
  "prisma-models",
  "psl",
  "query-connector",
@@ -4246,8 +4258,8 @@ dependencies = [
 
 [[package]]
 name = "prisma-client-rust-cli"
-version = "0.6.5"
-source = "git+https://github.com/Brendonovich/prisma-client-rust.git?tag=0.6.5#3db4094ae70aa0aa7047da005d14c0a3ff48ec51"
+version = "0.6.6"
+source = "git+https://github.com/Brendonovich/prisma-client-rust.git?tag=0.6.6#76693baa675bcb38213901984b306d92c4e8a168"
 dependencies = [
  "directories",
  "flate2",
@@ -4265,9 +4277,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "prisma-client-rust-macros"
+version = "0.6.6"
+source = "git+https://github.com/Brendonovich/prisma-client-rust.git?tag=0.6.6#76693baa675bcb38213901984b306d92c4e8a168"
+dependencies = [
+ "convert_case 0.6.0",
+]
+
+[[package]]
 name = "prisma-client-rust-sdk"
-version = "0.6.5"
-source = "git+https://github.com/Brendonovich/prisma-client-rust.git?tag=0.6.5#3db4094ae70aa0aa7047da005d14c0a3ff48ec51"
+version = "0.6.6"
+source = "git+https://github.com/Brendonovich/prisma-client-rust.git?tag=0.6.6#76693baa675bcb38213901984b306d92c4e8a168"
 dependencies = [
  "convert_case 0.5.0",
  "dml",
@@ -5410,6 +5430,7 @@ dependencies = [
  "serde",
  "serde_json",
  "tokio",
+ "tower-cookies",
  "tower-http 0.3.5",
 ]
 
@@ -6484,6 +6505,23 @@ dependencies = [
  "tower-layer",
  "tower-service",
  "tracing",
+]
+
+[[package]]
+name = "tower-cookies"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "40f38d941a2ffd8402b36e02ae407637a9caceb693aaf2edc910437db0f36984"
+dependencies = [
+ "async-trait",
+ "axum-core",
+ "cookie 0.17.0",
+ "futures-util",
+ "http",
+ "parking_lot 0.12.1",
+ "pin-project-lite",
+ "tower-layer",
+ "tower-service",
 ]
 
 [[package]]

@@ -7,12 +7,14 @@
     "build": "next build && next export -o dist",
     "tauri": "tauri"
   },
+  "proxy": "http://localhost:6969",
   "dependencies": {
     "@iris/iris_core": "1.0.0",
     "@react-oauth/google": "^0.7.0",
     "@rspc/client": "^0.1.2",
     "@rspc/react": "^0.1.2",
     "@tauri-apps/api": "^1.2.0",
+    "axios": "^1.3.4",
     "jwt-decode": "^3.1.2",
     "next": "^12.2.5",
     "react": "^18.2.0",

@@ -5425,6 +5425,7 @@ dependencies = [
  "envtesting",
  "futures",
  "iris_core",
+ "reqwest",
  "rspc",
  "sea-orm",
  "serde",

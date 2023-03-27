@@ -8,6 +8,7 @@ import nextLogo from "../assets/next.svg";
 import axios from "axios";
 // import { window } from "@tauri-apps/api";
 import {Procedures} from "@iris/iris_core/bindings";
+import { getGoogleOauthUrl } from "../utils";
  
 let test: Procedures | null = null;
 
@@ -50,7 +51,8 @@ function App() {
 		<div className="container">
 			<h1>Welcome to Tauri!</h1>
 
-			<button onClick={handleTheseNuts}>Login with Dickcord</button>
+			<button onClick={handleTheseNuts}>Login with Test</button>
+            <a href={getGoogleOauthUrl()}>Login with Google</a>
 			<button onClick={testCookies}>Test Cookies</button>
 
 			<div className="row">

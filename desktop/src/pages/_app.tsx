@@ -5,12 +5,20 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 
 import "../style.css";
 import "../App.css";
+import {client, queryClient, rspc} from "../utils";  
+import { Html } from "next/document";
 
 // This default export is required in a new `pages/_app.js` file.
+
+
 export default function MyApp({ Component, pageProps }: AppProps) {
 	return (
-		<GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID || ""}>
-			<Component {...pageProps} />
-		</GoogleOAuthProvider>
+		<div id="wrapper">
+            <rspc.Provider client={client} queryClient={queryClient}>
+                <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID || ""}>
+                    <Component {...pageProps} />
+                </GoogleOAuthProvider>
+            </rspc.Provider>
+		</div>
 	);
 }

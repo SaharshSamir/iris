@@ -4,7 +4,7 @@ use crate::{utils::Ctx,
     models::GoogleAuthCallbackQueryParams,
     google_oauth::get_access_token
 };       
-use axum::{Router, routing::get, response::{IntoResponse, Redirect}, debug_handler, extract::{State, Query}, Json};
+use axum::{Router, routing::get, response::{IntoResponse, Redirect}, debug_handler, extract::{State, Query}, Json, http::StatusCode};
 use serde::Serialize;
 use tower_cookies::{Cookie, CookieManagerLayer, Cookies};
 use tower_http::cors::{Any, CorsLayer};
@@ -23,29 +23,26 @@ async fn hey(_state: State<Ctx>) -> impl IntoResponse {
 }
 
 #[debug_handler]
-async fn auth_callback(Query(query): Query<GoogleAuthCallbackQueryParams>) -> impl IntoResponse {
+async fn auth_callback(Query(query): Query<GoogleAuthCallbackQueryParams>) -> Result<String, StatusCode>{
     let code = &query.code;
 
     if code.is_empty() {
-        return Json(ApiResponse {
-            msg: "bruh there's no code".to_string(),
-            body: None
-        });
+        return Err(StatusCode::INTERNAL_SERVER_ERROR);
     }
 
     let access_token_res = get_access_token(code).await;
 
     if access_token_res.is_err() {
         let message = access_token_res.err().unwrap().to_string();
-        return Json(ApiResponse{ 
-            msg: message, 
-            body: None
-        });
+        return Err(StatusCode::INTERNAL_SERVER_ERROR);
     } 
 
     let access_token = access_token_res.unwrap();
     println!("access token: {:?}", access_token);
-    return Json(ApiResponse { msg: "in progress".to_string(), body: None });
+    //return Ok(Redirect::permanent("http://localhost:6969/testPage"));
+    //
+    //return Json(ApiResponse { msg: "in progress".to_string(), body: None });
+    return Ok("Authed".to_string());
 }
 
 #[debug_handler]

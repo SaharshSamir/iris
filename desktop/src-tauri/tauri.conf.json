@@ -33,6 +33,7 @@
         "setAlwaysOnTop": true
       }
     },
+    "macOSPrivateApi": true,
     "bundle": {
       "active": true,
       "category": "DeveloperTool",
@@ -42,11 +43,9 @@
       },
       "externalBin": [],
       "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
+        "icons/Logo-32.png",
+        "icons/Logo-128.png",
+        "icons/Logo-128.png"
       ],
       "identifier": "com.tauri.dev",
       "longDescription": "",
@@ -75,23 +74,24 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "height": 500,
         "resizable": false,
         "title": "iris",
         "width": 800,
-        "alwaysOnTop": true,
+        "alwaysOnTop": false,
         "center": true,
         "skipTaskbar": true,
-        "visible": false,
-        "titleBarStyle": "Transparent",
-        "hiddenTitle": true,
+        "visible": true,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": false,
         "decorations": false,
-        "focus": false
+        "focus": false,
+        "transparent": true
       }
     ],
     "systemTray": {
-      "iconPath": "icons/icon.png",
-      "iconAsTemplate": true
+      "iconPath": "icons/Logo-128-transparent.png",
+      "iconAsTemplate": false
     }
   }
 }

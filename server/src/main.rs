@@ -1,16 +1,18 @@
 #![allow(non_snake_case)]
 
-use rspc::{Config, integrations::httpz::Request};
+use rspc::{Config, integrations::httpz::Request,Type};
 use axum::{routing::get, extract::State};
 use chrono::FixedOffset;
 use dotenv::dotenv;
 use iris_core::{
     db::new_client::new_client,
-    prisma::{example, PrismaClient},
+    prisma::{example, PrismaClient, DeviceType, self, user},
 };
+use serde::Deserialize;
 use std::{net::SocketAddr, sync::Arc, path::PathBuf};
 use tower_http::cors::{Any, CorsLayer};
 use crate::utils::Ctx;
+use bcrypt::hash;
 
 mod google_oauth;
 mod oauth;
@@ -18,6 +20,13 @@ mod utils;
 mod models;
 
 struct AnotherCtx {}
+
+#[derive(Debug, Deserialize, Type)]
+struct LoginData {
+    email: String,
+    password: String,
+    deviceType: String
+}
 
 #[tokio::main]
 async fn main() {
@@ -35,23 +44,32 @@ async fn main() {
        //             .db
        //             .example()
        //             .create(vec![example::created_at::set(currentDT)])
-       //             .exec()
-       //             .await
+       //             .exec() .await
        //             .expect("Could not create device");
        //         return currentDT;
        //     })
        // })
+       .mutation("register", |t| {
+           t(|ctx: Ctx, data: LoginData| async move {
+               let hashedPassword = hash(data.password, 12).unwrap();
+               let result: user::Data= ctx.db
+                   .user()
+                   .create(data.email, hashedPassword, vec![])
+                   .exec()
+                   .await?;
+               println!("result: {:?}", result);
+                return Ok(result); 
+           })
+       })
         .build()
         .arced();
 
     let cors = CorsLayer::new()
-        .allow_origin(Any);
+        .allow_origin(Any)
+        .allow_headers(Any)
+        .allow_methods(Any);
 
-    #[tokio::main]
-    async fn return_context() -> Ctx {
-        let context = utils::Ctx::new().await;
-        return context;
-    }
+    let context = utils::Ctx::new().await;
 
     let app = axum::Router::new()
         .route("/", get(|| async { "Hello 'rspc'!" })) 
@@ -59,7 +77,12 @@ async fn main() {
             "/rspc",
             router
                 .clone()
-                .endpoint(return_context)
+                .endpoint(|| {
+                    return context;           
+                })
+                //.endpoint(|| {
+                //    ()
+                //})
                 .axum(),
         )
         .merge(oauth::oauth_router())

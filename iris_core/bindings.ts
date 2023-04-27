@@ -3,6 +3,11 @@
 export type Procedures = {
     queries: 
         { key: "health", input: never, result: string },
-    mutations: never,
+    mutations: 
+        { key: "register", input: LoginData, result: User },
     subscriptions: never
 };
+
+export type LoginData = { email: string; password: string; deviceType: string }
+
+export type User = { id: string; name: string | null; email: string; password: string }

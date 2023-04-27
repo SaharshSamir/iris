@@ -7,6 +7,7 @@ use serde::Deserialize;
 pub struct OauthResponse {
     pub access_token: String,
     pub id_token: String,
+    pub refresh_token: String
 }
 
 pub async fn get_access_token(auth_code: &str) -> Result<OauthResponse, Box<dyn Error>> {

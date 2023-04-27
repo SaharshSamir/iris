@@ -3,3 +3,5 @@
 iris_core/src/prisma.rs
 .env
 node_modules
+.DS_STORE
+yarn.lock

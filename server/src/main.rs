@@ -3,10 +3,11 @@
 use crate::utils::Ctx;
 use axum::routing::get;
 use bcrypt::{hash, verify};
+use chrono::prelude::*;
 use dotenv::dotenv;
 use iris_core::prisma::{self, example, user, DeviceType, PrismaClient};
-use jsonwebtoken::{encode, EncodingKey, Header};
-use rspc::{Config, Error, ErrorCode, Type, integrations::httpz::Request};
+use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
+use rspc::{integrations::httpz::Request, Config, Error, ErrorCode, Type};
 use serde::{Deserialize, Serialize};
 use std::{net::SocketAddr, path::PathBuf, sync::Arc};
 use tower_http::cors::{Any, CorsLayer};
@@ -16,17 +17,20 @@ mod models;
 //mod oauth;
 mod utils;
 
-
 struct AnotherCtx {}
 
 #[derive(Debug, Serialize, Deserialize)]
 struct JwtPayload {
     user_id: String,
+    exp: u32,
 }
 
 impl JwtPayload {
     fn new(user_id: String) -> Self {
-        return Self { user_id };
+        return Self {
+            user_id,
+            exp: Utc::now().timestamp_subsec_millis(),
+        };
     }
 }
 #[derive(Debug, Deserialize, Type)]
@@ -35,7 +39,8 @@ struct LoginData {
     password: String,
 }
 
-const JWT_SECRET: &str = "asdoreojfdifjdjfoijfacxvcnvmxcnbv045&&fjdkasldjfkljlaadsfuiordlureubvubhjg";
+const JWT_SECRET: &str =
+    "asdoreojfdifjdjfoijfacxvcnvmxcnbv045&&fjdkasldjfkljlaadsfuiordlureubvubhjg";
 
 #[tokio::main]
 async fn main() {
@@ -123,23 +128,55 @@ async fn main() {
                         )) as Result<String, _>;
                     }
                 };
-
             })
         })
-        .query("getUser", |t| t(|ctx: Ctx, (): _| async move {
-            let token = ctx.jwt;
-            match token {
-                Some(jwt) => {
-                    println!("Token: {}", jwt);
-                    return "got token, check console".to_string();
-                },
-                None => {
-                    println!("Token not found");
-                    return "Token not found".to_string(); 
+        .query("getUser", |t| {
+            t(|ctx: Ctx, (): _| async move {
+                let token = ctx.jwt;
+                match token {
+                    Some(jwt) => {
+                        //parse token, get user id, fetch user from db, send user
+                        let mut validation = Validation::new(Algorithm::HS256);
+                        validation.validate_exp = false;
+                        println!("Token: {}", jwt);
+                        let jwt_data = decode::<JwtPayload>(
+                            &jwt,
+                            &DecodingKey::from_secret(JWT_SECRET.as_ref()),
+                            &validation,
+                        )
+                        .unwrap();
 
+                        let user_id = jwt_data.claims.user_id;
+                        let user_data = ctx
+                            .db
+                            .user()
+                            .find_unique(user::id::equals(user_id))
+                            .exec()
+                            .await
+                            .unwrap();
+
+                        match user_data {
+                            Some(user) => {
+                                return Ok(user);
+                            }
+                            None => {
+                                return Err(Error::new(
+                                    ErrorCode::Forbidden,
+                                    String::from("You are not who you say you are. Sus."),
+                                )) as Result<user::Data, _>;
+                            }
+                        }
+                    }
+                    None => {
+                        println!("Token not found");
+                        return Err(Error::new(
+                            ErrorCode::Forbidden,
+                            String::from("Who are you?"),
+                        )) as Result<user::Data, _>;
+                    }
                 }
-            }
-        }))
+            })
+        })
         .build()
         .arced();
 
@@ -148,7 +185,6 @@ async fn main() {
         .allow_headers(Any)
         .allow_methods(Any);
 
-
     let mut context = utils::Ctx::new().await;
     let app = axum::Router::new()
         .route("/", get(|| async { "Hello 'rspc'!" }))
@@ -156,9 +192,9 @@ async fn main() {
             "/rspc",
             router
                 .clone()
-                .endpoint(|req: Request|{
+                .endpoint(|req: Request| {
                     let jwt = req.headers().get("Authorization");
-                    context.add_jwt(jwt); 
+                    context.add_jwt(jwt);
                     return context;
                 })
                 //.endpoint(|| {

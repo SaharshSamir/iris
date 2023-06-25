@@ -47,11 +47,6 @@ function Login() {
 		push("/home");
 	}
 
-	useEffect(() => {
-		get_device_info().then((info) => {
-			console.log(info);
-		});
-	}, []);
 	return (
 		<div className="overflow-y-auto h-screen p-5 flex flex-col bg-gradient-to-t from-[#0D1027] to-[#071E42]">
 			<div className=" flex flex-col  items-center">

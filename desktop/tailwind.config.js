@@ -11,6 +11,7 @@ module.exports = {
     extend: {
         fontFamily: {
             Redrose: ["Red Rose", ...defaultTheme.fontFamily.sans],
+            RubikMono: ["Rubik Mono One", ...defaultTheme.fontFamily.sans]
         }
     },
   },

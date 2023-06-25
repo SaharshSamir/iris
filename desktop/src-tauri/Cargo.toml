@@ -22,6 +22,7 @@ cocoa = "0.24.1"
 enigo = "0.0.14"
 window-shadows = "0.2.1"
 window-vibrancy = "0.3.2"
+anyhow = "1.0.71"
 
 [features]
 # by default Tauri runs in production mode

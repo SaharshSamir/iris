@@ -4,9 +4,11 @@
 )]
 use std::{
     borrow::Borrow,
-    fs::{read_to_string, write, create_dir_all},
+    error::Error,
+    fs::{create_dir_all, read_to_string, write},
 };
 
+// use anyhow::Result;
 use reqwest::get;
 use serde::{Deserialize, Serialize};
 use serde_json::{self, Value};
@@ -28,10 +30,10 @@ struct DeviceInfo {
 }
 
 impl DeviceInfo {
-    fn new() -> Self {
+    fn new(name: String) -> Self {
         return Self {
-            name: String::new(),
-            device_type: String::new(),
+            name: name,
+            device_type: String::from("Computer"),
         };
     }
 }
@@ -62,7 +64,8 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             new_example,
             init_spotlight_behaviour,
-            read_device_info
+            read_device_info,
+            set_device_info
         ])
         .system_tray(system_tray)
         .on_system_tray_event(|_app, event| match event {
@@ -120,7 +123,6 @@ fn main() {
 
             println!("shortcut registered");
 
-            
             Ok(())
         })
         .run(tauri::generate_context!())
@@ -128,19 +130,48 @@ fn main() {
 }
 
 #[tauri::command]
-fn read_device_info(app: tauri::AppHandle) -> String {
+fn read_device_info(app: tauri::AppHandle) -> Result<String, String> {
+    //
     //println!("hey");
     //1. Device information
     let path_resolver = app.path_resolver();
     let mut device_info_file = path_resolver.app_config_dir().unwrap();
     device_info_file.push("device_info.json");
 
-    create_dir_all(device_info_file.parent().unwrap()).expect("could not create dir");
+    //create_dir_all(device_info_file.parent().unwrap()).expect("could not create dir");
 
-    let file: String = read_to_string(&device_info_file).unwrap_or_else(|e| {
-        eprintln!("folder or file didn't exist, creating a new one: {:?}", e);
-        write(&device_info_file, "{}").expect("trouble creating file");
-        return read_to_string(&device_info_file).unwrap();
+    //let file: string = read_to_string(&device_info_file).unwrap_or_else(|e| {
+    //    eprintln!("folder or file didn't exist, creating a new one: {:?}", e);
+    //    //write(&device_info_file, "{}").expect("trouble creating file");
+
+    //    return err("file doesn't exist".to_string());
+    //});
+    /*
+    match read_to_string(&device_info_file) {
+        Ok(file) => return Ok(file),
+        Err(e) => return Err("Device info doesn't exist".to_string())
+    };
+    */
+    return read_to_string(&device_info_file).map_err(|e| {
+        eprint!("trouble reading file {:?}", e);
+        return "device info not found".to_string();
     });
-    return file; 
+}
+
+#[tauri::command]
+fn set_device_info(app: tauri::AppHandle, device_name: String) {
+    println!("device_name: {}", device_name);
+    let path_resolver = app.path_resolver();
+    let mut device_info_file = path_resolver.app_config_dir().unwrap();
+
+    device_info_file.push("device_info.json");
+
+    create_dir_all(device_info_file.parent().unwrap()).expect("could not create dir");
+    let device_info = DeviceInfo::new(device_name);
+
+    write(
+        &device_info_file,
+        serde_json::to_string_pretty(&device_info).unwrap(),
+    )
+    .unwrap();
 }

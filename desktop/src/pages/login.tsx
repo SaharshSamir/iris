@@ -7,17 +7,16 @@ import { ErrorMessage } from "@hookform/error-message";
 import { Procedures } from "@iris/iris_core/bindings";
 // import Logo from "../assets/"
 import Logo from "../assets/Iconex/Logo-64.png";
+import Background from "../assets/auth-bg.png";
 import { DeviceInfo, get_device_info, rspc } from "../utils";
 import { useRouter } from "next/router";
 
 let test: Procedures | null = null;
 
-
 type LoginData = {
 	email?: string | undefined;
 	password?: string | undefined;
 };
-
 
 function Login() {
 	const { push } = useRouter();
@@ -42,29 +41,28 @@ function Login() {
 	console.log(errors);
 
 	if (typeof data !== "undefined") {
-        console.log(data);
-        localStorage.setItem("jwt", data);
+		console.log(data);
+		localStorage.setItem("jwt", data);
 		push("/home");
 	}
-
+	// bg-gradient-to-t from-[#0D1027] to-[#071E42]
 	return (
-		<div className="overflow-y-auto h-screen p-5 flex flex-col bg-gradient-to-t from-[#0D1027] to-[#071E42]">
-			<div className=" flex flex-col  items-center">
+		<div className="overflow-y-auto h-screen p-5 flex flex-col bg-grainy-blobs">
+			<div className=" flex flex-col  items-center justify-center">
 				<Image src={Logo} height={64} width={64} alt="logo" />
 				<p className="text-4xl font-Redrose">Sign In</p>
 				<form
 					onSubmit={handleSubmit(onSubmit)}
-					className="flex flex-col w-full justify-center items-center"
+					className="flex flex-col w-3/6 justify-center items-center"
 				>
 					<input
 						{...register("email", {
 							required: "Email is required",
 						})}
 						type="email"
-						className="input-bordered text-slate-900 input-sm input w-2/6 mt-4 mb-2 active:decoration-none"
+						className="input-bordered bg-[#12151E] border-[#575A62]  text-slate-200 input-sm input w-full mt-4 mb-2 p-5 active:decoration-none"
 						placeholder="Email"
 					/>
-
 					<input
 						{...register("password", {
 							required: "password is required",
@@ -74,7 +72,7 @@ function Login() {
 							},
 						})}
 						type="password"
-						className="input-bordered text-slate-900 input-sm input w-2/6 my-2 active:decoration-none"
+						className="input-bordered bg-[#12151E] border-[#575A62]  text-slate-200 input-sm input w-full mt-4 mb-2 p-5 active:decoration-none"
 						placeholder="Password"
 					/>
 					<ErrorMessage
@@ -141,14 +139,17 @@ function Login() {
 							))
 						}
 					/>
-					<button type="submit" className="bg-violet-700 w-2/6 btn">
+					<button
+						type="submit"
+						className="bg-violet-700 w-full min-h-0 btn h-9 text-base leading-[0px] mt-5"
+					>
 						Login
 					</button>
 				</form>
-				<div className="w-2/6 my-2 flex items-center justify-center">
+				<div className="w-3/6 my-2 flex items-center justify-center">
 					<span className="">or</span>
 				</div>
-				<button className="bg-slate-200 w-2/6 btn btn-disabled">
+				<button className="bg-slate-200 w-3/6 min-h-0 btn btn-disabled h-9 text-base leading-[0px] mb-3">
 					Continue With Google
 				</button>
 				<p>

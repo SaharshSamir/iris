@@ -36,6 +36,7 @@ impl JwtPayload {
 #[derive(Debug, Deserialize, Type)]
 struct LoginData {
     email: String,
+    username: String,
     password: String,
 }
 
@@ -75,7 +76,21 @@ async fn main() {
                 if user.is_some() {
                     return Err(Error::new(
                         ErrorCode::BadRequest,
-                        String::from("User already exists"),
+                        String::from("email already exists"),
+                    ));
+                }
+
+                //try to find user of the same email, if found, return with "User already exists" error.
+                let user: Option<user::Data> = ctx
+                    .db
+                    .user()
+                    .find_first(vec![user::username::equals(Some(data.username.clone()))])
+                    .exec()
+                    .await?;
+                if user.is_some() {
+                    return Err(Error::new(
+                        ErrorCode::BadRequest,
+                        String::from("username already exists"),
                     ));
                 }
 
@@ -83,7 +98,11 @@ async fn main() {
                 let result: user::Data = ctx
                     .db
                     .user()
-                    .create(data.email, hashedPassword, vec![])
+                    .create(
+                        data.email,
+                        hashedPassword,
+                        vec![user::username::set(Some(data.username))],
+                    )
                     .exec()
                     .await?;
                 println!("result: {:?}", result);

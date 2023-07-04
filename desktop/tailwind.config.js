@@ -12,6 +12,9 @@ module.exports = {
         fontFamily: {
             Redrose: ["Red Rose", ...defaultTheme.fontFamily.sans],
             RubikMono: ["Rubik Mono One", ...defaultTheme.fontFamily.sans]
+        },
+        backgroundImage: {
+            'grainy-blobs': "url('./assets/auth-bg.png')"
         }
     },
   },

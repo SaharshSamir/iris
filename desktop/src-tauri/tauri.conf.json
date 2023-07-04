@@ -74,10 +74,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 500,
+        "height": 600,
         "resizable": false,
         "title": "iris",
-        "width": 800,
+        "width": 900,
         "alwaysOnTop": false,
         "center": true,
         "skipTaskbar": true,

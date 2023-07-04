@@ -7,7 +7,7 @@ import { ErrorMessage } from "@hookform/error-message";
 import { Procedures } from "@iris/iris_core/bindings";
 // import Logo from "../assets/"
 import Logo from "../assets/Iconex/Logo-64.png";
-import { DeviceInfo, get_device_info, rspc } from "../utils";
+import { DeviceInfo, get_device_info, rspc, validateUsername } from "../utils";
 import { useRouter } from "next/router";
 
 let test: Procedures | null = null;
@@ -18,8 +18,8 @@ let axiosInstance = axios.create({
 
 type SignupData = {
 	email?: string | undefined;
+	username?: string | undefined;
 	password?: string | undefined;
-	confirmPassword?: string | undefined;
 	deviceType?: string | undefined;
 };
 
@@ -60,21 +60,39 @@ function Register() {
 		});
 	}, []);
 	return (
-		<div className="overflow-y-auto h-screen p-5 flex flex-col bg-gradient-to-t from-[#0D1027] to-[#071E42]">
+		<div className="overflow-y-auto h-screen p-5 flex flex-col bg-grainy-blobs">
 			<div className=" flex flex-col  items-center">
 				<Image src={Logo} height={64} width={64} alt="logo" />
 				<p className="text-4xl font-Redrose">Create An Account</p>
 				<form
 					onSubmit={handleSubmit(onSubmit)}
-					className="flex flex-col w-full justify-center items-center"
+					className="flex flex-col w-3/6 justify-center items-center"
 				>
 					<input
 						{...register("email", {
 							required: "Email is required",
 						})}
 						type="email"
-						className="input-bordered text-slate-900 input-sm input w-2/6 mt-4 mb-2 active:decoration-none"
+						className="input-bordered bg-[#12151E] border-[#575A62]  text-slate-200 input-sm input w-full mt-4 mb-2 p-5 active:decoration-none"
 						placeholder="Email"
+					/>
+
+					<input
+						{...register("username", {
+							required: "username is required",
+							minLength: {
+								value: 5,
+								message: "Click the 'i' icon for rules for creating a username",
+							},
+							validate: (val: string) => {
+								let validation = validateUsername(val);
+								if (!validation.valid) return validation.message;
+								return undefined;
+							},
+						})}
+						type="text"
+						className="input-bordered bg-[#12151E] border-[#575A62]  text-slate-200 input-sm input w-full mt-4 mb-2 p-5 active:decoration-none"
+						placeholder="username"
 					/>
 
 					<input
@@ -86,33 +104,17 @@ function Register() {
 							},
 						})}
 						type="password"
-						className="input-bordered text-slate-900 input-sm input w-2/6 my-2 active:decoration-none"
+						className="input-bordered bg-[#12151E] border-[#575A62]  text-slate-200 input-sm input w-full mt-4 mb-2 p-5 active:decoration-none"
 						placeholder="Password"
 					/>
 
-					<input
-						{...register("confirmPassword", {
-							required: "Confirm Password is required",
-							minLength: {
-								value: 5,
-								message: "Password should be minimum 5 characters",
-							},
-							validate: (val: string) => {
-								if (val !== watch("password")) return "passwords do not match";
-								return undefined;
-							},
-						})}
-						type="password"
-						className="input-bordered text-slate-900 input-sm input w-2/6 mt-2 mb-4 active:decoration-none"
-						placeholder="Confirm Password"
-					/>
 					<ErrorMessage
 						errors={errors}
 						name="email"
 						render={({ messages }) =>
 							messages &&
 							Object.entries(messages).map(([type, message]) => (
-								<div className="w-2/6">
+								<div className="w-full">
 									<div
 										key={type}
 										className="alert p-1 m-1 alert-error shadow-lg"
@@ -144,7 +146,7 @@ function Register() {
 						render={({ messages }) =>
 							messages &&
 							Object.entries(messages).map(([type, message]) => (
-								<div className="w-2/6">
+								<div className="w-full">
 									<div
 										key={type}
 										className="alert p-1 m-1 alert-error shadow-lg"
@@ -172,11 +174,11 @@ function Register() {
 					/>
 					<ErrorMessage
 						errors={errors}
-						name="confirmPassword"
+						name="username"
 						render={({ messages }) =>
 							messages &&
 							Object.entries(messages).map(([type, message]) => (
-								<div className="w-2/6">
+								<div className="w-full">
 									<div
 										key={type}
 										className="alert p-1 m-1 alert-error shadow-lg"
@@ -202,14 +204,17 @@ function Register() {
 							))
 						}
 					/>
-					<button type="submit" className="bg-violet-700 w-2/6 btn">
+					<button
+						type="submit"
+						className="bg-violet-700 w-full min-h-0 btn h-9 text-base leading-[0px] mt-5"
+					>
 						Register
 					</button>
 				</form>
-				<div className="w-2/6 my-2 flex items-center justify-center">
+				<div className="w-3/6 my-2 flex items-center justify-center">
 					<span className="">or</span>
 				</div>
-				<button className="bg-slate-200 w-2/6 btn btn-disabled">
+				<button className="bg-slate-200 w-3/6 min-h-0 btn btn-disabled h-9 text-base leading-[0px] mb-3">
 					Continue With Google
 				</button>
 				<p>

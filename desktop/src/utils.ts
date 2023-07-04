@@ -90,4 +90,30 @@ axiosClient.interceptors.request.use(config => {
 export const queryClient = new QueryClient();
 export const rspc = createReactQueryHooks<Procedures>();
 
+type ValidationResult = {
+    valid: boolean;
+    message: string | undefined;
+}
 
+export function validateUsername(username: string): ValidationResult {
+    let result: ValidationResult = {
+        valid: true,
+        message: undefined
+    }
+
+    const specialCharRegex = /[`!@#$%^&*()+\-=\[\]{};':"\\|,<>\/?~]+/;
+
+    //can't contain space
+    if(username.includes(" ")){
+        result.valid = false
+        result.message = "no space allowed";
+    }
+    //can't contain special characters
+    if(specialCharRegex.test(username)) {
+        result.valid = false
+        result.message = "no special characters allowed";
+    }
+
+
+    return result;
+}

@@ -44,11 +44,27 @@ model Session {
 }
 
 model User {
-  id       String   @id @default(cuid())
-  name     String?
-  email    String
-  password String
-  devices  Device[]
+  id                     String          @id @default(cuid())
+  name                   String?
+  username               String?
+  email                  String
+  password               String
+  devices                Device[]
+  friends                User[]          @relation("Friendship")
+  friendOf               User[]          @relation("Friendship")
+  sentFriendRequests     FriendRequest[] @relation("Sender")
+  receivedFriendRequests FriendRequest[] @relation("Receiver")
+}
+
+model FriendRequest {
+  id         String @id @default(cuid())
+  sender     User   @relation("Sender", fields: [senderId], references: [id])
+  senderId   String
+  receiver   User   @relation("Receiver", fields: [receiverId], references: [id])
+  receiverId String
+
+  @@index([senderId])
+  @@index([receiverId])
 }
 
 enum DeviceType {
@@ -63,4 +79,6 @@ model Device {
 
   User   User   @relation(fields: [userId], references: [id])
   userId String
+
+  @@index([userId])
 }

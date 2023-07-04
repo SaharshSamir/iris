@@ -2,7 +2,7 @@
 
 export type Procedures = {
     queries: 
-        { key: "getUser", input: never, result: { id: string; name: string | null; email: string; password: string; devices: Device[] } } | 
+        { key: "getUser", input: never, result: { id: string; name: string | null; username: string | null; email: string; password: string; devices: Device[] } } | 
         { key: "health", input: never, result: string },
     mutations: 
         { key: "addDevice", input: DeviceInfo, result: string } | 
@@ -11,10 +11,10 @@ export type Procedures = {
     subscriptions: never
 };
 
-export type Device = { id: string; type: DeviceType; name: string; userId: string }
-
 export type DeviceInfo = { name: string; user_id: string; device_type: string }
 
 export type LoginData = { email: string; password: string }
+
+export type Device = { id: string; type: DeviceType; name: string; userId: string }
 
 export type DeviceType = "Desktop" | "Phone"

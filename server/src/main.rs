@@ -14,6 +14,7 @@ use tower_http::cors::{Any, CorsLayer};
 
 mod google_oauth;
 mod models;
+mod routes;
 //mod oauth;
 mod utils;
 
@@ -47,9 +48,6 @@ struct DeviceInfo {
     device_type: String,
 }
 
-const JWT_SECRET: &str =
-    "asdoreojfdifjdjfoijfacxvcnvmxcnbv045&&fjdkasldjfkljlaadsfuiordlureubvubhjg";
-
 user::include!(user_with_devices { devices });
 
 #[tokio::main]
@@ -61,102 +59,7 @@ async fn main() {
             PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../iris_core/bindings.ts"),
         ))
         .query("health", |t| t(|_, _: ()| String::from("Aal is good...")))
-        .mutation("register", |t| {
-            t(|ctx: Ctx, data: LoginData| async move {
-                //hash password
-                let hashedPassword = hash(data.password, 12).unwrap();
-
-                //try to find user of the same email, if found, return with "User already exists" error.
-                let user: Option<user::Data> = ctx
-                    .db
-                    .user()
-                    .find_first(vec![user::email::equals(data.email.clone())])
-                    .exec()
-                    .await?;
-                if user.is_some() {
-                    return Err(Error::new(
-                        ErrorCode::BadRequest,
-                        String::from("email already exists"),
-                    ));
-                }
-
-                //try to find user of the same email, if found, return with "User already exists" error.
-                let user: Option<user::Data> = ctx
-                    .db
-                    .user()
-                    .find_first(vec![user::username::equals(Some(data.username.clone()))])
-                    .exec()
-                    .await?;
-                if user.is_some() {
-                    return Err(Error::new(
-                        ErrorCode::BadRequest,
-                        String::from("username already exists"),
-                    ));
-                }
-
-                //add user to database
-                let result: user::Data = ctx
-                    .db
-                    .user()
-                    .create(
-                        data.email,
-                        hashedPassword,
-                        vec![user::username::set(Some(data.username))],
-                    )
-                    .exec()
-                    .await?;
-                println!("result: {:?}", result);
-
-                let claim = JwtPayload::new(result.id.clone());
-                let token = encode(
-                    &Header::default(),
-                    &claim,
-                    &EncodingKey::from_secret(JWT_SECRET.as_ref()),
-                )
-                .unwrap();
-
-                return Ok(token);
-            })
-        })
-        .mutation("login", |t| {
-            t(|ctx: Ctx, data: LoginData| async move {
-                let user: Option<user::Data> = ctx
-                    .db
-                    .user()
-                    .find_first(vec![user::email::equals(data.email.clone())])
-                    .exec()
-                    .await
-                    .unwrap();
-
-                //return Ok("hey".to_string());
-                match user {
-                    Some(user) => {
-                        //passwords do match
-                        if verify(data.password, &user.password).unwrap() {
-                            let claim = JwtPayload::new(user.id);
-                            let token = encode(
-                                &Header::default(),
-                                &claim,
-                                &EncodingKey::from_secret(JWT_SECRET.as_ref()),
-                            );
-
-                            return Ok(token.unwrap());
-                        } else {
-                            return Err(Error::new(
-                                ErrorCode::Unauthorized,
-                                String::from("Invalid credentials"),
-                            )) as Result<String, _>;
-                        }
-                    }
-                    None => {
-                        return Err(Error::new(
-                            ErrorCode::BadRequest,
-                            String::from("The user does not exist"),
-                        )) as Result<String, _>;
-                    }
-                };
-            })
-        })
+        .merge("auth", routes::auth::mount())
         //middleware to convert jwt to user_id and authenticate the following
         .middleware(|mw| {
             mw.middleware(|mw| async move {
@@ -176,79 +79,7 @@ async fn main() {
                 }
             })
         })
-        .query("getUser", |t| {
-            t(|ctx: Ctx, (): _| async move {
-                let token = ctx.jwt;
-                match token {
-                    Some(jwt) => {
-                        //parse token, get user id, fetch user from db, send user
-                        let mut validation = Validation::new(Algorithm::HS256);
-                        validation.validate_exp = false;
-                        println!("Token: {}", jwt);
-                        let jwt_data = decode::<JwtPayload>(
-                            &jwt,
-                            &DecodingKey::from_secret(JWT_SECRET.as_ref()),
-                            &validation,
-                        )
-                        .unwrap();
-
-                        let user_id = jwt_data.claims.user_id;
-                        // user::include!({ devices });
-                        let user_data = ctx
-                            .db
-                            .user()
-                            .find_unique(user::id::equals(user_id))
-                            .include(user::include!({ devices }))
-                            .exec()
-                            .await
-                            .unwrap();
-
-                        match user_data {
-                            Some(user) => {
-                                return Ok(user);
-                            }
-                            None => {
-                                return Err(Error::new(
-                                    ErrorCode::Forbidden,
-                                    String::from("You are not who you say you are. Sus."),
-                                ))
-                            }
-                        }
-                    }
-                    None => {
-                        println!("Token not found");
-                        return Err(Error::new(
-                            ErrorCode::Forbidden,
-                            String::from("Who are you?"),
-                        ));
-                    }
-                }
-            })
-        })
-        .mutation("addDevice", |t| {
-            t(|ctx: Ctx, device_info: DeviceInfo| async move {
-                println!("adding device");
-                let device_type: DeviceType = match device_info.device_type.as_str() {
-                    "Computer" => DeviceType::Desktop,
-                    "Phone" => DeviceType::Phone,
-                    _ => DeviceType::Desktop,
-                };
-
-                let _device = ctx
-                    .db
-                    .device()
-                    .create(
-                        device_type,
-                        device_info.name,
-                        user::id::equals(ctx.user_id.unwrap()),
-                        vec![],
-                    )
-                    .exec()
-                    .await?;
-
-                return Ok("device added".to_string());
-            })
-        })
+        .merge("user", routes::user::mount())
         .build()
         .arced();
 

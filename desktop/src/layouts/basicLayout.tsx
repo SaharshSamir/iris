@@ -1,13 +1,14 @@
 import { ReactNode } from "react";
 import Image from "next/image";
 import Logo from "../assets/Iconex/Logo-32-transparent.png";
+import Header from "@components/header";
 
 const BasicLayout = ({ children }: { children: ReactNode }) => {
 	return (
 		<div
 			className=""
 			style={{
-				backgroundColor: "#161E35",
+				backgroundColor: "#0E1118",
 				height: "100vh",
 				padding: "30px 50px",
 			}}
@@ -19,8 +20,7 @@ const BasicLayout = ({ children }: { children: ReactNode }) => {
 					alignItems: "center",
 				}}
 			>
-				<Image src={Logo} height={32} width={32} alt="Logo" />
-				<p style={{ fontFamily: "Rubik Mono One", fontSize: "1.5rem" }}>IRIS</p>
+				<Header />
 			</div>
 			{children}
 		</div>

@@ -9,6 +9,7 @@
   },
   "proxy": "http://localhost:6969",
   "dependencies": {
+    "@heroicons/react": "^2.0.18",
     "@hookform/error-message": "^2.0.1",
     "@iris/iris_core": "1.0.0",
     "@react-oauth/google": "^0.7.0",

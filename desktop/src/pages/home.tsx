@@ -2,6 +2,15 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import BasicLayout from "../layouts/basicLayout";
 import { get_device_info, rspc } from "../utils";
+import Header from "@components/header";
+
+function Mydevices(data) {
+	return (
+		<div className="bg-secondary-grey w-full rounded-md">
+			<p>My Devices</p>
+		</div>
+	);
+}
 
 const Home = () => {
 	let { data, isLoading } = rspc.useQuery(["getUser"]);
@@ -31,7 +40,8 @@ const Home = () => {
 	}
 	return (
 		<BasicLayout>
-			<p className="break-words">{JSON.stringify(data)}</p>
+			{/* <p className="break-words">{JSON.stringify(data)}</p> */}
+			<Mydevices />
 		</BasicLayout>
 	);
 };

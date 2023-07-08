@@ -8,6 +8,10 @@ module.exports = {
   ],
   darkMode: false, // or 'media' or 'class'j
   theme: {
+    colors: {
+        "primary-black": "#0E1118",
+        'secondary-grey': "#212634"
+    },
     extend: {
         fontFamily: {
             Redrose: ["Red Rose", ...defaultTheme.fontFamily.sans],

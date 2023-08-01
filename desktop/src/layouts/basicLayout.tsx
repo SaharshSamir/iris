@@ -11,6 +11,7 @@ const BasicLayout = ({ children }: { children: ReactNode }) => {
 				backgroundColor: "#0E1118",
 				height: "100vh",
 				padding: "30px 50px",
+				fontFamily: "Inter",
 			}}
 		>
 			<div

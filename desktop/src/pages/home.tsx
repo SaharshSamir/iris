@@ -3,20 +3,21 @@ import { useEffect, useState } from "react";
 import BasicLayout from "../layouts/basicLayout";
 import { get_device_info, rspc } from "../utils";
 import Header from "@components/header";
+import { Device } from "@iris/iris_core/bindings";
 
-function Mydevices(data) {
+function Mydevices(data: { devices: Device[] | undefined }) {
 	return (
-		<div className="bg-secondary-grey w-full rounded-md">
-			<p>My Devices</p>
+		<div className="bg-[#212634] mt-6 w-full rounded-md h-28">
+			<p>{JSON.stringify(data.devices)}</p>
+			<p className="">My Devices</p>
 		</div>
 	);
 }
 
 const Home = () => {
-	let { data, isLoading } = rspc.useQuery(["getUser"]);
+	let { data, isLoading } = rspc.useQuery(["user.getUser"]);
 	let [isOnboarding, setIsOnboarding] = useState(false);
-	let { push } = useRouter();
-
+	let { push, reload } = useRouter();
 	useEffect(() => {
 		get_device_info()
 			.then((device_info) => {
@@ -30,6 +31,13 @@ const Home = () => {
 				push("/deviceonboarding");
 			});
 	}, []);
+
+	useEffect(() => {
+		if (localStorage.getItem("jwt") === null) {
+			push("login");
+		}
+	}, []);
+
 	if (isLoading) {
 		return <BasicLayout>"Loading..."</BasicLayout>;
 	}
@@ -41,7 +49,7 @@ const Home = () => {
 	return (
 		<BasicLayout>
 			{/* <p className="break-words">{JSON.stringify(data)}</p> */}
-			<Mydevices />
+			<Mydevices devices={data?.devices} />
 		</BasicLayout>
 	);
 };

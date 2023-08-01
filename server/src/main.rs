@@ -79,7 +79,7 @@ async fn main() {
                 }
             })
         })
-        .merge("user", routes::user::mount())
+        .merge("user.", routes::user::mount())
         .build()
         .arced();
 

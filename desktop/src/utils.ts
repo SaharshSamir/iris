@@ -8,7 +8,8 @@ import axios, { HeadersDefaults } from 'axios';
 import { URL } from "url";
 
 let rootUrl = "https://accounts.google.com/o/oauth2/v2/auth";
-let serverUrl = "http://127.0.0.1:6969";
+// let serverUrl = "http://127.0.0.1:6969";
+let serverUrl = "http://df39-103-132-28-208.ngrok-free.app";
 
 function getGoogleOauthUrl() {
 
@@ -72,7 +73,7 @@ export const client = createClient<Procedures>({
 
 //axiosInstance
 const axiosClient = axios.create();
-axiosClient.defaults.baseURL = 'http://127.0.0.1:6969';
+axiosClient.defaults.baseURL = 'http://df39-103-132-28-208.ngrok-free.app';
 
 axiosClient.defaults.headers = {
   'Content-Type': 'application/json',

@@ -40,7 +40,7 @@ impl DeviceInfo {
 
 #[tauri::command]
 async fn new_example(name: String) -> String {
-    let ans = match get("http://127.0.0.1:6969/rspc/newex").await {
+    let ans = match get("http://df39-103-132-28-208.ngrok-free.app/rspc/newex").await {
         Ok(res) => {
             let resp = res.json::<Value>().await.unwrap_or_default();
 

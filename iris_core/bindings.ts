@@ -5,8 +5,8 @@ export type Procedures = {
         { key: "health", input: never, result: string } | 
         { key: "user.getUser", input: never, result: { id: string; name: string | null; username: string | null; email: string; password: string; devices: Device[] } },
     mutations: 
-        { key: "authlogin", input: LoginData, result: string } | 
-        { key: "authregister", input: LoginData, result: string } | 
+        { key: "auth.login", input: LoginData, result: string } | 
+        { key: "auth.register", input: LoginData, result: string } | 
         { key: "user.addDevice", input: DeviceInfo, result: string },
     subscriptions: never
 };

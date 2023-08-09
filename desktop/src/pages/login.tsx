@@ -10,6 +10,8 @@ import Logo from "../assets/Iconex/Logo-64.png";
 import Background from "../assets/auth-bg.png";
 import { DeviceInfo, get_device_info, rspc } from "../utils";
 import { useRouter } from "next/router";
+import AuthLayout from "../layouts/authLayout";
+import IRInput from "@components/IRInput";
 
 let test: Procedures | null = null;
 
@@ -20,7 +22,7 @@ type LoginData = {
 
 function Login() {
 	const { push } = useRouter();
-	const { mutate, data } = rspc.useMutation(["login"]);
+	const { mutate, data } = rspc.useMutation(["auth.login"]);
 	const {
 		register,
 		handleSubmit,
@@ -35,6 +37,7 @@ function Login() {
 		mutate({
 			email: data.email || "",
 			password: data.password || "",
+			username: "",
 		});
 	};
 	console.log("user created: ", data);
@@ -47,116 +50,108 @@ function Login() {
 	}
 	// bg-gradient-to-t from-[#0D1027] to-[#071E42]
 	return (
-		<div className="overflow-y-auto h-screen p-5 flex flex-col bg-grainy-blobs">
-			<div className=" flex flex-col  items-center justify-center">
-				<Image src={Logo} height={64} width={64} alt="logo" />
-				<p className="text-4xl font-Redrose">Sign In</p>
-				<form
-					onSubmit={handleSubmit(onSubmit)}
-					className="flex flex-col w-3/6 justify-center items-center"
+		<AuthLayout>
+			<Image src={Logo} height={64} width={64} alt="logo" />
+			<p className="text-4xl font-Redrose">Sign In</p>
+			<form
+				onSubmit={handleSubmit(onSubmit)}
+				className="flex flex-col w-3/6 justify-center items-center"
+			>
+				<IRInput
+					label="Email"
+					name="email"
+					type="text"
+					placeholder="eg:elon@musk.com"
+					isPassword={false}
+					register={register}
+					errors={errors.email?.message}
+				/>
+				<div className="my-2"></div>
+				<IRInput
+					label="Password"
+					name="password"
+					type="password"
+					placeholder="iHateZuck666"
+					isPassword={false}
+					register={register}
+					errors={errors.email?.message}
+				/>
+				<div className="my-2"></div>
+				<ErrorMessage
+					errors={errors}
+					name="email"
+					render={({ messages }) =>
+						messages &&
+						Object.entries(messages).map(([type, message]) => (
+							<div className="w-2/6">
+								<div key={type} className="alert p-1 m-1 alert-error shadow-lg">
+									<div>
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											className="stroke-current flex-shrink-0 h-6 w-6"
+											fill="none"
+											viewBox="0 0 24 24"
+										>
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth="2"
+												d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+											/>
+										</svg>
+										<span className="text-sm">{message}</span>
+									</div>
+								</div>
+							</div>
+						))
+					}
+				/>
+				<ErrorMessage
+					errors={errors}
+					name="password"
+					render={({ messages }) =>
+						messages &&
+						Object.entries(messages).map(([type, message]) => (
+							<div className="w-2/6">
+								<div key={type} className="alert p-1 m-1 alert-error shadow-lg">
+									<div>
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											className="stroke-current flex-shrink-0 h-6 w-6"
+											fill="none"
+											viewBox="0 0 24 24"
+										>
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth="2"
+												d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+											/>
+										</svg>
+										<span className="text-sm">{message}</span>
+									</div>
+								</div>
+							</div>
+						))
+					}
+				/>
+				<button
+					type="submit"
+					className="bg-violet-700 w-full min-h-0 btn h-9 text-base leading-[0px] mt-5"
 				>
-					<input
-						{...register("email", {
-							required: "Email is required",
-						})}
-						type="email"
-						className="input-bordered bg-[#12151E] border-[#575A62]  text-slate-200 input-sm input w-full mt-4 mb-2 p-5 active:decoration-none"
-						placeholder="Email"
-					/>
-					<input
-						{...register("password", {
-							required: "password is required",
-							minLength: {
-								value: 5,
-								message: "Password should be minimum 5 characters",
-							},
-						})}
-						type="password"
-						className="input-bordered bg-[#12151E] border-[#575A62]  text-slate-200 input-sm input w-full mt-4 mb-2 p-5 active:decoration-none"
-						placeholder="Password"
-					/>
-					<ErrorMessage
-						errors={errors}
-						name="email"
-						render={({ messages }) =>
-							messages &&
-							Object.entries(messages).map(([type, message]) => (
-								<div className="w-2/6">
-									<div
-										key={type}
-										className="alert p-1 m-1 alert-error shadow-lg"
-									>
-										<div>
-											<svg
-												xmlns="http://www.w3.org/2000/svg"
-												className="stroke-current flex-shrink-0 h-6 w-6"
-												fill="none"
-												viewBox="0 0 24 24"
-											>
-												<path
-													strokeLinecap="round"
-													strokeLinejoin="round"
-													strokeWidth="2"
-													d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-												/>
-											</svg>
-											<span className="text-sm">{message}</span>
-										</div>
-									</div>
-								</div>
-							))
-						}
-					/>
-					<ErrorMessage
-						errors={errors}
-						name="password"
-						render={({ messages }) =>
-							messages &&
-							Object.entries(messages).map(([type, message]) => (
-								<div className="w-2/6">
-									<div
-										key={type}
-										className="alert p-1 m-1 alert-error shadow-lg"
-									>
-										<div>
-											<svg
-												xmlns="http://www.w3.org/2000/svg"
-												className="stroke-current flex-shrink-0 h-6 w-6"
-												fill="none"
-												viewBox="0 0 24 24"
-											>
-												<path
-													strokeLinecap="round"
-													strokeLinejoin="round"
-													strokeWidth="2"
-													d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-												/>
-											</svg>
-											<span className="text-sm">{message}</span>
-										</div>
-									</div>
-								</div>
-							))
-						}
-					/>
-					<button
-						type="submit"
-						className="bg-violet-700 w-full min-h-0 btn h-9 text-base leading-[0px] mt-5"
-					>
-						Login
-					</button>
-				</form>
-				<div className="w-3/6 my-2 flex items-center justify-center">
-					<span className="">or</span>
-				</div>
-				<button className="bg-slate-200 w-3/6 min-h-0 btn btn-disabled h-9 text-base leading-[0px] mb-3">
-					Continue With Google
+					Login
 				</button>
-				<p>
-					Dont Have an Account? <a href="/register">Register</a>
-				</p>
+			</form>
+			<div className="w-3/6 my-2 flex items-center justify-center">
+				<span className="">or</span>
 			</div>
-		</div>
+			<button className="bg-slate-200 w-3/6 min-h-0 btn btn-disabled h-9 text-base leading-[0px] mb-3">
+				Continue With Google
+			</button>
+			<p>
+				Dont Have an Account? <a onClick={() => push("/register")}>Register</a>
+			</p>
+		</AuthLayout>
 	);
 }
 

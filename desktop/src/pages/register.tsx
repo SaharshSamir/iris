@@ -9,6 +9,7 @@ import { Procedures } from "@iris/iris_core/bindings";
 import Logo from "../assets/Iconex/Logo-64.png";
 import { DeviceInfo, get_device_info, rspc, validateUsername } from "../utils";
 import { useRouter } from "next/router";
+import IRInput from "@components/IRInput";
 
 let test: Procedures | null = null;
 
@@ -26,7 +27,7 @@ type SignupData = {
 function Register() {
 	let foo: SignupData = {};
 	const { push } = useRouter();
-	const { mutate, data } = rspc.useMutation(["register"]);
+	const { mutate, data } = rspc.useMutation(["auth.register"]);
 	const { data: healthData } = rspc.useQuery(["health"]);
 	const {
 		register,
@@ -43,6 +44,7 @@ function Register() {
 		mutate({
 			email: data.email || "",
 			password: data.password || "",
+			username: "",
 		});
 	};
 	console.log("user created: ", data);
@@ -61,24 +63,32 @@ function Register() {
 	}, []);
 	return (
 		<div className="overflow-y-auto h-screen p-5 flex flex-col bg-grainy-blobs">
-			<div className=" flex flex-col  items-center">
+			<div className=" flex flex-col  items-center mt-8">
 				<Image src={Logo} height={64} width={64} alt="logo" />
 				<p className="text-4xl font-Redrose">Create An Account</p>
 				<form
 					onSubmit={handleSubmit(onSubmit)}
-					className="flex flex-col w-3/6 justify-center items-center"
+					className="flex flex-col w-5/12 justify-center items-center"
 				>
-					<input
-						{...register("email", {
-							required: "Email is required",
-						})}
-						type="email"
-						className="input-bordered bg-[#12151E] border-[#575A62]  text-slate-200 input-sm input w-full mt-4 mb-2 p-5 active:decoration-none"
-						placeholder="Email"
+					<IRInput
+						label="Email"
+						name="email"
+						type="text"
+						placeholder="eg:elon@musk.com"
+						isPassword={false}
+						register={register}
+						errors={errors.email?.message}
 					/>
 
-					<input
-						{...register("username", {
+					<IRInput
+						label="Username"
+						name="username"
+						type="text"
+						placeholder="pointy_rocket420"
+						isPassword={false}
+						register={register}
+						errors={errors.email?.message}
+						validation={{
 							required: "username is required",
 							minLength: {
 								value: 5,
@@ -89,23 +99,23 @@ function Register() {
 								if (!validation.valid) return validation.message;
 								return undefined;
 							},
-						})}
-						type="text"
-						className="input-bordered bg-[#12151E] border-[#575A62]  text-slate-200 input-sm input w-full mt-4 mb-2 p-5 active:decoration-none"
-						placeholder="username"
+						}}
 					/>
-
-					<input
-						{...register("password", {
+					<IRInput
+						label="Password"
+						name="password"
+						type="password"
+						placeholder="i_hate_zucky"
+						isPassword={true}
+						register={register}
+						errors={errors.password?.message}
+						validation={{
 							required: "password is required",
 							minLength: {
 								value: 5,
 								message: "Password should be minimum 5 characters",
 							},
-						})}
-						type="password"
-						className="input-bordered bg-[#12151E] border-[#575A62]  text-slate-200 input-sm input w-full mt-4 mb-2 p-5 active:decoration-none"
-						placeholder="Password"
+						}}
 					/>
 
 					<ErrorMessage
@@ -210,15 +220,16 @@ function Register() {
 					>
 						Register
 					</button>
+					<div className="w-3/6 my-2 flex items-center justify-center">
+						<span className="">or</span>
+					</div>
+					<button className="bg-slate-200 w-full min-h-0 btn btn-disabled h-9 text-base leading-[0px] mb-3">
+						Continue With Google
+					</button>
 				</form>
-				<div className="w-3/6 my-2 flex items-center justify-center">
-					<span className="">or</span>
-				</div>
-				<button className="bg-slate-200 w-3/6 min-h-0 btn btn-disabled h-9 text-base leading-[0px] mb-3">
-					Continue With Google
-				</button>
+
 				<p>
-					Already have an account? <a href="/login">Login</a>
+					Already have an account? <a onClick={() => push("/login")}>Login</a>
 				</p>
 			</div>
 		</div>

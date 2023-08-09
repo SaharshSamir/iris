@@ -59,7 +59,7 @@ async fn main() {
             PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../iris_core/bindings.ts"),
         ))
         .query("health", |t| t(|_, _: ()| String::from("Aal is good...")))
-        .merge("auth", routes::auth::mount())
+        .merge("auth.", routes::auth::mount())
         //middleware to convert jwt to user_id and authenticate the following
         .middleware(|mw| {
             mw.middleware(|mw| async move {
@@ -111,7 +111,10 @@ async fn main() {
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 6969));
 
-    println!("Listening on http://{}/rspc/", addr);
+    println!(
+        "Listening on http://{}/rspc/ \n tunneling frmo http://df39-103-132-28-208.ngrok-free.app",
+        addr
+    );
     axum::Server::bind(&addr)
         .serve(app.into_make_service())
         .await
